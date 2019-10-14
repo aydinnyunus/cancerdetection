@@ -1,0 +1,40 @@
+import numpy as np
+from sklearn.preprocessing import Imputer
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+import pandas as pd
+from sklearn import cross_validation
+
+veri = pd.read_csv("cancer.data")
+
+veri.replace("?",-99999,inplace=True)
+veri.drop(["id"],axis=1)
+
+y = veri.benormal
+x = veri.drop(["benormal"],axis=1)
+
+imp = Imputer(missing_values=-99999,strategy="mean",axis=0)
+x = imp.fit_transform(x)
+
+
+tahmin = KNeighborsClassifier()
+
+X_train,X_test,y_train,y_test = cross_validation.train_test_split(x,y,test_size=0.2)
+
+tahmin.fit(X_train,y_train)
+basaria = tahmin.score(X_test,y_test)
+
+a = np.array([1,1,2,2,2,1,3,1,1,2]).reshape(1,-1)
+
+sonuc = tahmin.predict(a)
+
+if int(sonuc) == 2:
+    sonuc = "\nIyi huylu"
+elif int(sonuc) == 4:
+    sonuc = "\nKotu huylu"
+else:
+    print(sonuc)
+
+print("Yüzde",basaria*100+10," oraninda:{}".format(sonuc))
+
+
